@@ -1,0 +1,86 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="350dp"
+    android:layout_height="35dp"
+    android:orientation="horizontal" >
+    
+    <TextView
+        android:id="@+id/sunday"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+		android:clickable="true"
+        android:text="S"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="18dp"
+        android:background="@drawable/back_unchecked"
+		/>
+    
+    <TextView 
+		android:id="@+id/monday"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="M"
+        android:gravity="center"
+        android:textSize="18dp"
+        android:background="@drawable/back_unchecked"
+        />
+    
+    
+    <TextView 
+		android:id="@+id/tuesday"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="T"
+        android:gravity="center"
+        android:textSize="18dp"
+        android:background="@drawable/back_unchecked"
+        />
+        
+    <TextView 
+		android:id="@+id/wednesday"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="W"
+        android:gravity="center"
+        android:textSize="18dp"
+        android:background="@drawable/back_unchecked"
+        />
+        
+    <TextView 
+		android:id="@+id/thursday"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="R"
+        android:gravity="center"
+        android:textSize="18dp"
+        android:background="@drawable/back_unchecked"
+        />
+        
+    <TextView 
+		android:id="@+id/friday"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="F"
+        android:gravity="center"
+        android:textSize="18dp"
+        android:background="@drawable/back_unchecked"
+        />
+        
+    <TextView 
+		android:id="@+id/saturday"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="S"
+        android:gravity="center"
+        android:textSize="18dp"
+        android:background="@drawable/back_unchecked"
+        />
+       
+
+</LinearLayout>

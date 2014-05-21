@@ -1,0 +1,191 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="6dp"
+    android:paddingLeft="6dp"
+    android:paddingRight="6dp"
+    android:paddingTop="6dp"
+	android:orientation="vertical" >
+	
+        <ListView
+	        android:id="@android:id/list" 
+	        android:layout_width="match_parent"
+	        android:layout_height="0dp"
+	        android:layout_weight="0.40"
+        />
+       
+    
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1.48"
+    android:paddingTop="6dp" >
+
+ 
+    
+    
+		<RelativeLayout
+		    android:id="@+id/category_select"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+			 >
+		    
+		    <TextView
+		        android:id="@+id/from_text"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_alignBottom="@+id/start_time"
+		        android:layout_alignParentTop="true"
+		        android:gravity="center"
+		        android:text="From:"
+		        android:textSize="24sp" />
+		    
+		    <TimePicker 
+		        android:id="@+id/start_time"
+		        android:layout_width="wrap_content"
+		        android:layout_height="80dp"
+		        android:layout_toRightOf="@id/from_text"
+		    />	        
+
+		    <TextView
+		        android:id="@+id/until_text"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_alignBottom="@+id/stop_time"
+		        android:layout_below="@id/start_time"
+		        android:gravity="center"
+		        android:text="Until:"
+		        android:textSize="24sp" />
+		    
+		    <TimePicker 
+		        android:id="@+id/stop_time"
+		        android:layout_width="wrap_content"
+		        android:layout_height="80dp"
+		        android:layout_alignLeft="@id/start_time"
+		        android:layout_below="@id/start_time"
+		    />	       
+		    
+		</RelativeLayout>
+   <LinearLayout 
+    		    android:id="@+id/clear_or_busy"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"    	
+		    android:orientation="horizontal"
+		    android:layout_below="@id/category_select"	    
+    		    >
+
+			    <RadioButton 
+			        android:id="@+id/select_clear_time"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"
+			        android:text="Clear Busy Time"
+			        android:paddingBottom="4dp"
+				    android:paddingTop="4dp"
+				    android:layout_weight="1"
+			        />
+			    
+			    <RadioButton 
+			        android:id="@+id/select_new_busy_time"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"
+			        android:text="New Busy Time"
+		      		android:paddingBottom="4dp"
+					android:paddingTop="4dp"
+					android:layout_weight="1"
+			        />
+			    
+	</LinearLayout>		    
+    		<LinearLayout 
+    		    android:id="@+id/single_date_view"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"    	
+		    android:orientation="horizontal"	    
+			android:layout_below="@id/clear_or_busy"
+    		    >
+
+			    <RadioButton 
+			        android:id="@+id/select_single_date"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"
+			        android:text="Single Date"
+			        android:paddingBottom="10dp"
+				    android:paddingTop="10dp"
+				    android:layout_weight="1"
+			        />
+			    
+			    <RadioButton 
+			        android:id="@+id/select_weekdays"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"
+			        android:text="Repeat Weekly"
+		      		android:paddingBottom="10dp"
+					android:paddingTop="10dp"
+					android:layout_weight="1"
+			        />			    
+    		    
+    		</LinearLayout>
+
+	    <DatePicker
+		    	android:id="@+id/date_picker"
+			android:calendarViewShown="true"
+			android:layout_width="wrap_content"
+			android:layout_height="140dp"
+			android:spinnersShown="false"
+			android:layout_below="@id/single_date_view"
+			android:visibility="gone"
+		/>  
+	    
+	    <RelativeLayout 
+	        android:id="@+id/weekday_wrapper"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@id/single_date_view"
+	        android:paddingTop="4dp"
+	        android:visibility="gone"
+	        >
+	     	<include 
+		        layout="@layout/weekday_picker"
+		    />	        
+	        
+	    </RelativeLayout>
+	    
+	    	<RelativeLayout 
+	    	    android:id="@+id/repeat_weeks_picker"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@id/weekday_wrapper"
+	        android:paddingTop="4dp"
+	        android:visibility="gone"
+	    >		  
+
+		    <NumberPicker
+		        android:id="@+id/number_picker"
+		        android:layout_width="120dp"
+		        android:layout_height="80dp"
+		        android:layout_alignParentRight="true" />
+		 
+		    	<TextView 
+			    android:id="@+id/text1"
+	    	        android:layout_width="wrap_content"
+		        android:layout_height="match_parent"
+		        android:text="For how many weeks?"
+		        android:textSize="24sp"
+		        android:layout_alignBottom="@id/number_picker"
+		        	android:layout_toLeftOf="@id/number_picker"
+		        android:gravity="center"
+			    />
+		    
+	    </RelativeLayout>
+
+
+</RelativeLayout>
+
+<Button
+    android:id="@+id/save_button"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="0.18"
+    android:text="Update"
+    android:textSize="24sp" />
+
+</LinearLayout>

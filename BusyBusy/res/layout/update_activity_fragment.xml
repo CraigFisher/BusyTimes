@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="6dp"
+    android:paddingLeft="6dp"
+    android:paddingRight="6dp"
+    android:paddingTop="6dp"
+   	>
+
+ 	<EditText
+ 		android:id="@+id/name_view"
+ 		android:layout_width="match_parent"
+ 		android:layout_height="wrap_content"
+ 		android:paddingBottom="6dp"
+    		android:paddingLeft="6dp"
+    		android:paddingRight="6dp"
+    		android:paddingTop="6dp"
+ 		android:textSize="18sp"
+ 		android:hint="Activity Name"
+ 	/>
+   	<EditText
+ 		android:id="@+id/location_view"
+ 		android:layout_width="match_parent"
+ 		android:layout_height="wrap_content"
+ 		android:paddingBottom="6dp"
+    		android:paddingLeft="6dp"
+    		android:paddingRight="6dp"
+    		android:paddingTop="6dp"
+ 		android:textSize="18sp"
+ 		android:hint="Activity Location (city, country, etc.)"
+ 		android:layout_below="@id/name_view"
+ 		android:layout_alignLeft="@id/name_view"  
+ 	/>
+   	<Button 
+   	    android:id="@+id/save_activity"
+   	    android:text="Save"
+   	    android:layout_width="match_parent"
+ 		android:layout_height="wrap_content"
+ 		android:layout_below="@id/location_view"/>
+
+</RelativeLayout>

@@ -1,0 +1,34 @@
+<!--
+  Copyright 2013 The Android Open Source Project
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+
+<resources>
+    <string name="app_name">Busy Times</string>
+    <string-array name="nav_items">
+        <item>New Update</item>
+        <item>Compare</item>
+        <item>Who might ...?</item>
+        <item>New Activity</item>        
+        <item>My Activities</item>
+        <item>My Contacts</item>
+    </string-array>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="action_settings">Settings</string>
+	<string name="no_activities_msg">You currently have no Activties.  Busy Times cannot be set without them.  Would you like to create one now?</string>
+	<string name="new_activity_button_msg">Create New Activity</string>
+<!--     <string name="action_websearch">Web search</string> -->
+<!--     <string name="app_not_available">Sorry, there\'s no web browser available</string> -->
+</resources>
