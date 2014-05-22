@@ -16,8 +16,6 @@ import android.app.ListFragment;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -74,10 +72,6 @@ implements OnCheckedChangeListener, OnClickListener,
 	  private boolean THURSDAY = false;
 	  private boolean FRIDAY = false;
 	  private boolean SATURDAY = false;
-	  
-	  private boolean NEW_BUSY_TIME = true;
-	  private final long MINUTE_IN_MILLIS = DateUtils.MINUTE_IN_MILLIS;
-	  private final long HOUR_IN_MILLIS = DateUtils.HOUR_IN_MILLIS;
       
   	@Override
   	public void onAttach(Activity parentActivity) {
@@ -89,11 +83,6 @@ implements OnCheckedChangeListener, OnClickListener,
 	  public void onActivityCreated(Bundle savedInstanceState) {
 	    super.onActivityCreated(savedInstanceState);
 	  }
-	
-//	  @Override
-//	  public void onListItemClick(ListView l, View v, int position, long id) {
-//	    // do something with the data
-//	  }
 	  
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -101,49 +90,49 @@ implements OnCheckedChangeListener, OnClickListener,
 		    activityDao = new ActivityDao(DatabaseCreator.instance(parentActivity).getWritableDatabase());
 		    adminActivities = activityDao.getUserActivities(AdminData.ID);
 		    View view;
-            
+		    
             adminActivities_Size = adminActivities.size();
-            if(adminActivities_Size > 0) {
+            if(adminActivities_Size > 0) {	//AS LONG AS USER HAS ACTIVITIES, CREATE FRAGMENT NORMALLY
                 adminActivities_Checked = new boolean[adminActivities_Size];
                 for(int i = 0; i < adminActivities_Size; i++) {
-                	adminActivities_Checked[i] = false;
+                		adminActivities_Checked[i] = false;
                 }
             	
 		        view = inflater.inflate(R.layout.update_fragment, container, false);
 		        this.mainView = view;
 		      		        	
 	            adapter = new ActivityListAdapter(getActivity(), adminActivities);
-	    		setListAdapter(adapter);
+	    			setListAdapter(adapter);
 	    		    
-	    		rbSingleDate = (RadioButton) view.findViewById(R.id.select_single_date);
-	    		rbWeekly = (RadioButton) view.findViewById(R.id.select_weekdays);
-	    		rbBusyTime = (RadioButton) view.findViewById(R.id.select_new_busy_time);
-	    		rbClearTime = (RadioButton) view.findViewById(R.id.select_clear_time);
+	    			rbSingleDate = (RadioButton) view.findViewById(R.id.select_single_date);
+	    			rbWeekly = (RadioButton) view.findViewById(R.id.select_weekdays);
+	    			rbBusyTime = (RadioButton) view.findViewById(R.id.select_new_busy_time);
+	    			rbClearTime = (RadioButton) view.findViewById(R.id.select_clear_time);
 	    		   
-	    		rbSingleDate.setOnCheckedChangeListener(this);
-	    		rbWeekly.setOnCheckedChangeListener(this);
-	    		rbBusyTime.setOnCheckedChangeListener(this);
-	    		rbClearTime.setOnCheckedChangeListener(this);	    		    
+	    			rbSingleDate.setOnCheckedChangeListener(this);
+	    			rbWeekly.setOnCheckedChangeListener(this);
+	    			rbBusyTime.setOnCheckedChangeListener(this);
+	    			rbClearTime.setOnCheckedChangeListener(this);	    		    
 	    			
-	    		TextView sundayView = (TextView) view.findViewById(R.id.sunday);
-	    		sundayView.setOnClickListener(this);
-	    		TextView mondayView = (TextView) view.findViewById(R.id.monday);
-	    	    mondayView.setOnClickListener(this);
-	    		TextView tuesdayView = (TextView) view.findViewById(R.id.tuesday);
-	    		tuesdayView.setOnClickListener(this);
-	    		TextView wednesdayView = (TextView) view.findViewById(R.id.wednesday);
-	    		wednesdayView.setOnClickListener(this);
-	    		TextView thursdayView = (TextView) view.findViewById(R.id.thursday);
-	    		thursdayView.setOnClickListener(this);
-	    		TextView fridayView = (TextView) view.findViewById(R.id.friday);
-	    		fridayView.setOnClickListener(this);
-	    		TextView saturdayView = (TextView) view.findViewById(R.id.saturday);
-	    		saturdayView.setOnClickListener(this);
+	    			TextView sundayView = (TextView) view.findViewById(R.id.sunday);
+	    			TextView mondayView = (TextView) view.findViewById(R.id.monday);
+	    			TextView tuesdayView = (TextView) view.findViewById(R.id.tuesday);
+	    			TextView wednesdayView = (TextView) view.findViewById(R.id.wednesday);
+	    			TextView thursdayView = (TextView) view.findViewById(R.id.thursday);
+	    			TextView fridayView = (TextView) view.findViewById(R.id.friday);
+	    			TextView saturdayView = (TextView) view.findViewById(R.id.saturday);
+	    			sundayView.setOnClickListener(this);
+	    			mondayView.setOnClickListener(this);
+	    			tuesdayView.setOnClickListener(this);
+	    			wednesdayView.setOnClickListener(this);
+	    			thursdayView.setOnClickListener(this);
+	    			fridayView.setOnClickListener(this);
+	    			saturdayView.setOnClickListener(this);
 	    			
-	    		back_checked = getResources().getDrawable(R.drawable.back_checked);
-	    		back_unchecked = getResources().getDrawable(R.drawable.back_unchecked);
+	    			back_checked = getResources().getDrawable(R.drawable.back_checked);
+	    			back_unchecked = getResources().getDrawable(R.drawable.back_unchecked);
             
-        		NumberPicker numberPicker = (NumberPicker) mainView.findViewById(R.id.number_picker);
+        			NumberPicker numberPicker = (NumberPicker) mainView.findViewById(R.id.number_picker);
            		numberPicker.setMinValue(0);
            		numberPicker.setMaxValue(16);
            		
@@ -161,20 +150,17 @@ implements OnCheckedChangeListener, OnClickListener,
            		mStartTime.clear(Calendar.MILLISECOND);
            		mStartTime.clear(Calendar.SECOND);
            		mStartTime.clear(Calendar.MINUTE);
-           		mStartTime.clear(Calendar.HOUR_OF_DAY);
+           		mStartTime.set(Calendar.HOUR_OF_DAY, 0);
            		mFinishedTime.clear(Calendar.MILLISECOND);
            		mFinishedTime.clear(Calendar.SECOND);
            		mFinishedTime.clear(Calendar.MINUTE);
-           		mFinishedTime.clear(Calendar.HOUR_OF_DAY);     
+           		mFinishedTime.set(Calendar.HOUR_OF_DAY, 0);
            		
            		startPicker.setCurrentHour(hour);
            		startPicker.setCurrentMinute(minute);
            		stopPicker.setCurrentHour(hour);
            		stopPicker.setCurrentMinute(minute);
-           		
-    	    	Log.i("cc","onCreateView(),,,,,,"+mStartTime.get(Calendar.YEAR) + ".." + mStartTime.get(Calendar.MONTH) + ".." + mStartTime.get(Calendar.DAY_OF_MONTH) + ".." +
-    	    			mStartTime.get(Calendar.HOUR_OF_DAY) + ".." + mStartTime.get(Calendar.MINUTE));
-           		    
+           		           		    
            		DatePicker datePicker = (DatePicker) mainView.findViewById(R.id.date_picker);
            		datePicker.init(mStartTime.get(Calendar.YEAR), 
            		                mStartTime.get(Calendar.MONTH), 
@@ -186,8 +172,6 @@ implements OnCheckedChangeListener, OnClickListener,
            											              int monthOfYear, int dayOfMonth) {
            									mStartTime.set(year, monthOfYear, dayOfMonth);
            									mFinishedTime.set(year, monthOfYear, dayOfMonth);
-           							    	Log.i("cc","onDateChanged(),,,,,,"+mStartTime.get(Calendar.YEAR) + ".." + mStartTime.get(Calendar.MONTH) + ".." + mStartTime.get(Calendar.DAY_OF_MONTH) + ".." +
-           							    			mStartTime.get(Calendar.HOUR_OF_DAY) + ".." + mStartTime.get(Calendar.MINUTE));
            								}       			
            		});
            		
@@ -202,19 +186,18 @@ implements OnCheckedChangeListener, OnClickListener,
             		view = inflater.inflate(R.layout.update_fragment_empty, container, false);
             		newActivityButton = (Button) view.findViewById(R.id.new_activity_button);
             		newActivityButton.setOnClickListener(new Button.OnClickListener() {
-
 						@Override
 						public void onClick(View v) {
 							CreateNewActivityListener listener = (CreateNewActivityListener) parentActivity;
 							listener.createNewActivity();
 						}
-            			
             		});
             }
 			
 			return view;
 		}
 		
+		@SuppressWarnings("deprecation")
 		public void onClick(View v) {
 			boolean checked = true;
 			
@@ -258,14 +241,15 @@ implements OnCheckedChangeListener, OnClickListener,
 		
 		private void saveUpdate() {
 			BusyTime bt = null;
-			
 			if(busyTimeDao == null) {
 				busyTimeDao = new BusyTimeDao(DatabaseCreator.instance(parentActivity).getWritableDatabase());				
 			}
 
 		    long start = mStartTime.getTimeInMillis();
-		    long stop = mFinishedTime.getTimeInMillis();
-
+		    long stop = mFinishedTime.getTimeInMillis();   
+//		    DateDebugger.print("saveUpdate()", start);
+//		    DateDebugger.print("saveUpdate()", stop);
+		    
 		    UserActivity activity;
 		    boolean successful = true;
 		    for (int i = 0; i < adminActivities_Size; i++) {
@@ -274,6 +258,9 @@ implements OnCheckedChangeListener, OnClickListener,
 			    	bt = busyTimeDao.insertChecked(start, stop, activity.getName(), activity.getLocation(), AdminData.ID);		    			
 			    	if(bt == null) {
 			    		successful = false;
+			    	} else { //success
+//			    		DateDebugger.print("UpdateFragment.saveUpdate()", bt.getStart_time());
+//			    		DateDebugger.print("UpdateFragment.saveUpdate()", bt.getStop_time());
 			    	}
 		    	}
 		    }
@@ -290,11 +277,9 @@ implements OnCheckedChangeListener, OnClickListener,
 			if (isChecked) {
 	            int id = buttonView.getId();
 	            if(id == R.id.select_clear_time) {  
-	            		rbBusyTime.setChecked(false);	            	
-	       			NEW_BUSY_TIME = false;
+	            		rbBusyTime.setChecked(false);	
 	       		} else if(id == R.id.select_new_busy_time) {
-	       			rbClearTime.setChecked(false);	       		
-	       			NEW_BUSY_TIME = true;
+	       			rbClearTime.setChecked(false);
 	       		} else {
 	           		RelativeLayout pickerLayout = (RelativeLayout) mainView.findViewById(R.id.weekday_wrapper);
 	           		RelativeLayout repeatLayout = (RelativeLayout) mainView.findViewById(R.id.repeat_weeks_picker);		
@@ -323,22 +308,13 @@ implements OnCheckedChangeListener, OnClickListener,
 			if(view.getId() == R.id.start_time) {				
 			    	mStartTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
 			    	mStartTime.set(Calendar.MINUTE, minute);
-			    	Log.i("cc","onTimeChanged(),,,,,,"+mStartTime.get(Calendar.YEAR) + ".." + mStartTime.get(Calendar.MONTH) + ".." + mStartTime.get(Calendar.DAY_OF_MONTH) + ".." +
-			    			mStartTime.get(Calendar.HOUR_OF_DAY) + ".." + mStartTime.get(Calendar.MINUTE));
 			} else if(view.getId() == R.id.stop_time) {
 			    	mFinishedTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
 			    	mFinishedTime.set(Calendar.MINUTE, minute);
 			}
 			
-			//make sure stop time doesn't surpass start time
+			//TODO: make sure stop time doesn't surpass start time
 			//     if it does, move stop time to start time
-//			if((mStartHourMillis + mStartMinuteMillis) > (mStopHourMillis + mStopMinuteMillis)) {
-//	       		stopPicker.setCurrentHour(startPicker.getCurrentHour());
-//	       		stopPicker.setCurrentMinute(startPicker.getCurrentMinute());
-//				mStopHourMillis = mStartHourMillis;
-//				mStopMinuteMillis = mStartMinuteMillis;
-//			}
-
 		} 
 		
 		public class ActivityListAdapter extends ArrayAdapter<UserActivity> {
@@ -358,6 +334,10 @@ implements OnCheckedChangeListener, OnClickListener,
 			    View rowView = inflater.inflate(R.layout.activity_item_row, parent, false);
 			    CheckBox checkbox1 = (CheckBox) rowView.findViewById(R.id.activity_selection_1);
 			    CheckBox checkbox2 = (CheckBox) rowView.findViewById(R.id.activity_selection_2);
+			    
+			    //the following two callbacks depend on both 'position' from the getView() method and
+			    //		'selectedActivities' from the PreCompareFragment class, so they cannot 
+			    //		be declared in one callback.
 			    checkbox1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView,

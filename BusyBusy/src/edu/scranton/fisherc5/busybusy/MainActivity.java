@@ -16,36 +16,30 @@
 
 package edu.scranton.fisherc5.busybusy;
 
-import java.util.ArrayList;
-import java.util.Locale;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import edu.scranton.fisherc5.busybusy.db.schema.DatabaseCreator;
 import edu.scranton.fisherc5.busybusy.utils.Keys;
-import edu.scranton.fisherc5.busybusy.utils.UserActivity;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.SearchManager;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class MainActivity extends Activity 
 implements UpdateFragment.CreateNewActivityListener, PreCompareFragment.onCompareButtonListener {
@@ -166,6 +160,11 @@ implements UpdateFragment.CreateNewActivityListener, PreCompareFragment.onCompar
 	public void setDailyViewFragment(Bundle args) {
 		Fragment dailyViewFrag = new DailyViewFragment();
 		dailyViewFrag.setArguments(args);
+		SimpleDateFormat format = new SimpleDateFormat("MMMM d, yyyy");
+		Calendar temp = new GregorianCalendar();
+		temp.setTimeInMillis(args.getLong(Keys.SELECTED_DATE_KEY));
+		
+		getActionBar().setTitle(format.format(temp.getTime()));
 		
 		//SET TRANSACTION.  ADD TO BACK STACK
 		FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -197,7 +196,7 @@ implements UpdateFragment.CreateNewActivityListener, PreCompareFragment.onCompar
 	    		Fragment updateActivityFrag = new UpdateUserActivityFragment();
 	    		fragmentManager.beginTransaction().replace(R.id.content_frame, updateActivityFrag).commit();
 	    		break;
-    }
+	    }
 
     	// update selected item and title, then close the drawer
         mDrawerList.setItemChecked(position, true);

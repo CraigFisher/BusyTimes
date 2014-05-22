@@ -24,16 +24,5 @@ public class UserDao {
 		}
 		return name;
 	}
-//
-//	private BusyTime cursorToBusyTime(Cursor cursor) {
-//		BusyTime bt = new BusyTime();
-//		bt.setStart_time(cursor.getLong(0));
-//		bt.setStop_time(cursor.getLong(1));
-//		bt.setActivity_name(cursor.getString(2));
-//		bt.setUser_id(cursor.getLong(3));
-//		bt.setLocation(cursor.getString(4));
-//		return bt;
-//	}	
-	
 
 }

@@ -37,7 +37,7 @@ public final class R {
         public static final int weekday_selector=0x7f020006;
     }
     public static final class id {
-        public static final int action_settings=0x7f080027;
+        public static final int action_settings=0x7f080028;
         public static final int activity_selection_1=0x7f080000;
         public static final int activity_selection_2=0x7f080001;
         public static final int category_select=0x7f08000e;
@@ -45,23 +45,24 @@ public final class R {
         public static final int compare_button=0x7f08000a;
         public static final int content_frame=0x7f080003;
         public static final int daily_time_slots=0x7f080007;
-        public static final int date_picker=0x7f080009;
+        public static final int date_picker=0x7f080019;
         public static final int drawer_layout=0x7f080002;
-        public static final int friday=0x7f080025;
+        public static final int friday=0x7f080026;
         public static final int from_text=0x7f08000f;
         public static final int left_drawer=0x7f080004;
         public static final int location_view=0x7f08000c;
-        public static final int monday=0x7f080021;
+        public static final int monday=0x7f080022;
         public static final int name_slots=0x7f080005;
         public static final int name_view=0x7f08000b;
-        public static final int new_activity_button=0x7f08001f;
-        public static final int no_activities_textview=0x7f08001e;
-        public static final int number_picker=0x7f08001b;
+        public static final int new_activity_button=0x7f080020;
+        public static final int no_activities_textview=0x7f08001f;
+        public static final int number_picker=0x7f08001c;
+        public static final int precompare_date_picker=0x7f080009;
         public static final int precompare_message_textview=0x7f080008;
-        public static final int repeat_weeks_picker=0x7f08001a;
-        public static final int saturday=0x7f080026;
+        public static final int repeat_weeks_picker=0x7f08001b;
+        public static final int saturday=0x7f080027;
         public static final int save_activity=0x7f08000d;
-        public static final int save_button=0x7f08001d;
+        public static final int save_button=0x7f08001e;
         public static final int select_clear_time=0x7f080014;
         public static final int select_new_busy_time=0x7f080015;
         public static final int select_single_date=0x7f080017;
@@ -69,14 +70,14 @@ public final class R {
         public static final int single_date_view=0x7f080016;
         public static final int start_time=0x7f080010;
         public static final int stop_time=0x7f080012;
-        public static final int sunday=0x7f080020;
-        public static final int text1=0x7f08001c;
-        public static final int thursday=0x7f080024;
+        public static final int sunday=0x7f080021;
+        public static final int text1=0x7f08001d;
+        public static final int thursday=0x7f080025;
         public static final int time=0x7f080006;
-        public static final int tuesday=0x7f080022;
+        public static final int tuesday=0x7f080023;
         public static final int until_text=0x7f080011;
-        public static final int wednesday=0x7f080023;
-        public static final int weekday_wrapper=0x7f080019;
+        public static final int wednesday=0x7f080024;
+        public static final int weekday_wrapper=0x7f08001a;
     }
     public static final class layout {
         public static final int activity_item_row=0x7f030000;

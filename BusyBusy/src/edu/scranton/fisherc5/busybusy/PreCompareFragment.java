@@ -1,8 +1,10 @@
 package edu.scranton.fisherc5.busybusy;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
-import edu.scranton.fisherc5.busybusy.UpdateFragment.ActivityListAdapter;
 import edu.scranton.fisherc5.busybusy.db.daos.ActivityDao;
 import edu.scranton.fisherc5.busybusy.db.schema.DatabaseCreator;
 import edu.scranton.fisherc5.busybusy.utils.AdminData;
@@ -19,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.Toast;
 
 public class PreCompareFragment extends ListFragment
@@ -28,6 +31,7 @@ public class PreCompareFragment extends ListFragment
 	private ActivityDao activityDao = null;
 	private ArrayList<UserActivity> allActivities = null;
 	private ArrayList<UserActivity> selectedActivities;
+	private Calendar calendar;
 	
 	private ActivityListAdapter adapter;
 	
@@ -58,6 +62,25 @@ public class PreCompareFragment extends ListFragment
         		adapter = new ActivityListAdapter(getActivity(), allActivities);
 		    setListAdapter(adapter);
 		    
+		    calendar = new GregorianCalendar();
+		    calendar.setTime(new Date());
+       		calendar.clear(Calendar.MILLISECOND);
+       		calendar.clear(Calendar.SECOND);
+       		calendar.set(Calendar.HOUR_OF_DAY, 0);
+       		calendar.set(Calendar.MINUTE, 2);    //slight offset to ensure dailyViewAdapter's getView() calculations work
+       											//		possibly unnecessary
+		    DatePicker datePicker = (DatePicker) view.findViewById(R.id.precompare_date_picker);
+       		datePicker.init(calendar.get(Calendar.YEAR), 
+       		                calendar.get(Calendar.MONTH), 
+       		                calendar.get(Calendar.DAY_OF_MONTH), 
+       		                new DatePicker.OnDateChangedListener() {
+       							@Override
+       								public void onDateChanged(DatePicker view ,int year, 
+       											              int monthOfYear, int dayOfMonth) {
+       									calendar.set(year, monthOfYear, dayOfMonth);       									
+       								}       			
+       		});
+
 		    Button compareButton = (Button) view.findViewById(R.id.compare_button);
 		    compareButton.setOnClickListener(this);
 		    		
@@ -67,24 +90,19 @@ public class PreCompareFragment extends ListFragment
 		//FOR NOW, METHOD IS ONLY HANDLING CLICKS FROM THE SUBMISSION BUTTON
 		@Override
 		public void onClick(View v) {
-			onCompareButtonListener listener = (onCompareButtonListener) parentActivity;
-			Bundle args = new Bundle();
-			
-			
-		    Date date = new Date();
-		    calendar = new GregorianCalendar();
-		    calendar.setTime(date);
-		    calendar.set(Calendar.HOUR_OF_DAY, 0);
-		    dateMillis = calendar.getTimeInMillis();
-		    dateMillisAdjusted = dateMillis + 30;
-			
-			
 			if(!selectedActivities.isEmpty()) {
-				args.putSerializable(Keys.SELECTED_ACTIVITIES_KEY, selectedActivities);	
+				long dateMillis = calendar.getTimeInMillis();
+				Bundle args = new Bundle();
+				args.putLong(Keys.SELECTED_DATE_KEY, dateMillis);
+				args.putSerializable(Keys.SELECTED_ACTIVITIES_KEY, selectedActivities);
+
+//				DateDebugger.print("PreCompareFragment.onClick() Selected Date", dateMillis);
+				
+				onCompareButtonListener listener = (onCompareButtonListener) parentActivity;
+				listener.setDailyViewFragment(args);			
 			} else {
-				Toast.makeText(parentActivity, "Please selected activities to compare.", Toast.LENGTH_LONG).show();
-			}			
-			listener.setDailyViewFragment(args);
+				Toast.makeText(parentActivity, "Please select activities to compare.", Toast.LENGTH_LONG).show();
+			}
 		}
 		
 		public class ActivityListAdapter extends ArrayAdapter<UserActivity> {
@@ -97,6 +115,8 @@ public class PreCompareFragment extends ListFragment
 			    this.values = values;
 			  }
 
+			  //this getView method creates two columns for the list, corresponding to
+			  //			'checkbox1' and 'checkbox2'
 			  @Override
 			  public View getView(final int position, View convertView, ViewGroup parent) {
 			    LayoutInflater inflater = (LayoutInflater) context
@@ -104,6 +124,10 @@ public class PreCompareFragment extends ListFragment
 			    View rowView = inflater.inflate(R.layout.activity_item_row, parent, false);
 			    CheckBox checkbox1 = (CheckBox) rowView.findViewById(R.id.activity_selection_1);
 			    CheckBox checkbox2 = (CheckBox) rowView.findViewById(R.id.activity_selection_2);
+			    
+			    //the following two callbacks depend on both 'position' from the getView() method and
+			    //		'selectedActivities' from the PreCompareFragment class, so they cannot 
+			    //		be declared in one callback.
 			    checkbox1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView,
@@ -133,8 +157,7 @@ public class PreCompareFragment extends ListFragment
 			    String name = activity.getName();
 			    String location = activity.getLocation();
 			    
-			    checkbox1.setText(name + " (" + location + ")");			    
-			    
+			    checkbox1.setText(name + " (" + location + ")");			    			    
 			    if((position * 2) < values.size() - 1) {
 				    activity = values.get((position * 2) + 1);
 				    name = activity.getName();

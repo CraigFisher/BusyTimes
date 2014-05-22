@@ -1,27 +1,18 @@
 package edu.scranton.fisherc5.busybusy;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
 
 import edu.scranton.fisherc5.busybusy.utils.BusyTime;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class DailyViewAdapter extends ArrayAdapter<BusyTime> {
@@ -34,9 +25,7 @@ public class DailyViewAdapter extends ArrayAdapter<BusyTime> {
 	private float slotSetWeight = 6.0f;
 	
 	private long dateMillis;
-	private long dateMillisAdjusted;
 	private final long THIRTY_MINUTES = DateUtils.MINUTE_IN_MILLIS * 30;
-	private GregorianCalendar calendar;
 	
 	private static long[] dailyTimeIntervals = new long[48];
 	private String[] dailyTimeStrings = {
@@ -48,37 +37,28 @@ public class DailyViewAdapter extends ArrayAdapter<BusyTime> {
 			"8:00", "8:30", "9:00", "9:30", "10:00", "10:30", "11:00", "11:30" 
 	};
 
-//    MAKE THIS A FRESH NEW DYNAMIC DRAWABLE
-	
 	LayoutInflater inflater;
-	
     ArrayList<ArrayList<BusyTime>> userBusyTimes;
     
     public DailyViewAdapter(Context context, ArrayList<ArrayList<BusyTime>> _userBusyTimes,
-    								long _dateMillisAdjusted) {
+    								long _dateMillis) {
     		super(context, R.layout.daily_view_row);
         mContext = context;
 		this.userBusyTimes = _userBusyTimes;
+		this.dateMillis = _dateMillis;
         back_checked = mContext.getResources().getDrawable(R.drawable.back_checked);
 		back_unchecked = mContext.getResources().getDrawable(R.drawable.back_unchecked);
 		
-//	    Date date = new Date();
-//	    calendar = new GregorianCalendar();
-//	    calendar.setTime(date);
-//	    calendar.set(Calendar.HOUR_OF_DAY, 0);
-//	    dateMillis = calendar.getTimeInMillis();
-//	    dateMillisAdjusted = dateMillis + 30;
-	    dateMillisAdjusted = _dateMillisAdjusted;
-	    
+//		DateDebugger.print("adapter.getView() Selected Date", this.dateMillis);
+
 		inflater = (LayoutInflater) mContext.
-				getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	    
+				getSystemService(Context.LAYOUT_INFLATER_SERVICE);	    
 	    initDailyTimes();
     }
     
 	public void initDailyTimes() {
 		for(int i = 0; i < 48; i++) {
-			dailyTimeIntervals[i] = (i * THIRTY_MINUTES) + dateMillisAdjusted;
+			dailyTimeIntervals[i] = (i * THIRTY_MINUTES) + dateMillis;
 		}
 	}
 
@@ -88,7 +68,6 @@ public class DailyViewAdapter extends ArrayAdapter<BusyTime> {
     
     // create a new ImageView for each item referenced by the Adapter
     //TODO: make listview start midway down
-    //TODO
     public View getView(int position, View view, ViewGroup parent) {
 	    	ViewHolder holder = new ViewHolder(); // our view holder of the row
 	        
@@ -128,13 +107,11 @@ public class DailyViewAdapter extends ArrayAdapter<BusyTime> {
 	        				timeOverlapFound = true;
 	        			}	
 			    }
-			    
 		        if(timeOverlapFound) {
 		    			holder.textView.setBackgroundDrawable(back_checked);		//TODO: CHANGE DEPRECATED METHODS?       			
 		    		} else {
 		    			holder.textView.setBackgroundDrawable(back_unchecked);
 		    		}
-
 				layout.addView(holder.textView);
 	        }
             view = layout;	            
@@ -151,9 +128,6 @@ public class DailyViewAdapter extends ArrayAdapter<BusyTime> {
 	
 	private class ViewHolder {
 		TextView textView;
-		LinearLayout layout;
-//	    private Drawable back_checked = mContext.getResources().getDrawable(R.drawable.back_checked);
-//	    private Drawable back_unchecked = mContext.getResources().getDrawable(R.drawable.back_unchecked);
 	}
     
 }

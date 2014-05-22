@@ -1,23 +1,18 @@
 package edu.scranton.fisherc5.busybusy;
 
-import java.util.ArrayList;
-
 import edu.scranton.fisherc5.busybusy.db.daos.ActivityDao;
 import edu.scranton.fisherc5.busybusy.db.schema.DatabaseCreator;
 import edu.scranton.fisherc5.busybusy.utils.AdminData;
 import edu.scranton.fisherc5.busybusy.utils.UserActivity;
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class UpdateUserActivityFragment extends Fragment implements OnClickListener {
