@@ -56,7 +56,6 @@ public final class R {
         public static final int name_view=0x7f08000b;
         public static final int new_activity_button=0x7f080020;
         public static final int no_activities_textview=0x7f08001f;
-        public static final int number_picker=0x7f08001c;
         public static final int precompare_date_picker=0x7f080009;
         public static final int precompare_message_textview=0x7f080008;
         public static final int repeat_weeks_picker=0x7f08001b;
@@ -77,6 +76,7 @@ public final class R {
         public static final int tuesday=0x7f080023;
         public static final int until_text=0x7f080011;
         public static final int wednesday=0x7f080024;
+        public static final int week_count_picker=0x7f08001c;
         public static final int weekday_wrapper=0x7f08001a;
     }
     public static final class layout {

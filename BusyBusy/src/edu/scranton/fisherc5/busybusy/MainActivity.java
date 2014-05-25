@@ -51,7 +51,7 @@ implements UpdateFragment.CreateNewActivityListener, PreCompareFragment.onCompar
     private CharSequence mTitle;
     private String[] mNavItems;
     
-    SQLiteDatabase db = null;
+    private boolean mDateInActionBar = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,9 +94,6 @@ implements UpdateFragment.CreateNewActivityListener, PreCompareFragment.onCompar
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-		DatabaseCreator creator = new DatabaseCreator(this);
-		db = creator.getWritableDatabase();
         
         if (savedInstanceState == null) {
             selectItem(0);
@@ -157,6 +154,18 @@ implements UpdateFragment.CreateNewActivityListener, PreCompareFragment.onCompar
 		selectItem(3);
 	}
 	
+	//if a date has been set in the ActionBar, and we are navigating out of the
+	//		date view using the back button, make sure the ActionBar is set back
+	//		to "Compare"
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		if(mDateInActionBar) {
+			mDrawerList.setItemChecked(1, true);
+	        setTitle(mNavItems[1]);
+		}
+	}
+	
 	public void setDailyViewFragment(Bundle args) {
 		Fragment dailyViewFrag = new DailyViewFragment();
 		dailyViewFrag.setArguments(args);
@@ -165,6 +174,7 @@ implements UpdateFragment.CreateNewActivityListener, PreCompareFragment.onCompar
 		temp.setTimeInMillis(args.getLong(Keys.SELECTED_DATE_KEY));
 		
 		getActionBar().setTitle(format.format(temp.getTime()));
+		mDateInActionBar = true;
 		
 		//SET TRANSACTION.  ADD TO BACK STACK
 		FragmentTransaction transaction = getFragmentManager().beginTransaction();

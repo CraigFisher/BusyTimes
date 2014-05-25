@@ -159,7 +159,7 @@
 	    >		  
 
 		    <NumberPicker
-		        android:id="@+id/number_picker"
+		        android:id="@+id/week_count_picker"
 		        android:layout_width="120dp"
 		        android:layout_height="80dp"
 		        android:layout_alignParentRight="true" />
@@ -170,8 +170,8 @@
 		        android:layout_height="match_parent"
 		        android:text="For how many weeks?"
 		        android:textSize="24sp"
-		        android:layout_alignBottom="@id/number_picker"
-		        	android:layout_toLeftOf="@id/number_picker"
+		        android:layout_alignBottom="@id/week_count_picker"
+		        	android:layout_toLeftOf="@id/week_count_picker"
 		        android:gravity="center"
 			    />
 		    

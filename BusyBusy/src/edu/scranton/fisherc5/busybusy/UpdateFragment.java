@@ -10,12 +10,14 @@ import edu.scranton.fisherc5.busybusy.db.daos.BusyTimeDao;
 import edu.scranton.fisherc5.busybusy.db.schema.DatabaseCreator;
 import edu.scranton.fisherc5.busybusy.utils.AdminData;
 import edu.scranton.fisherc5.busybusy.utils.BusyTime;
+import edu.scranton.fisherc5.busybusy.utils.DateDebugger;
 import edu.scranton.fisherc5.busybusy.utils.UserActivity;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,17 +36,14 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 public class UpdateFragment extends ListFragment
-implements OnCheckedChangeListener, OnClickListener,
-		   TimePicker.OnTimeChangedListener {
+implements OnCheckedChangeListener, OnClickListener, 
+           DatePicker.OnDateChangedListener, TimePicker.OnTimeChangedListener,
+           NumberPicker.OnValueChangeListener {
 	  private Activity parentActivity = null;
 	  private ActivityDao activityDao = null;
 	  private BusyTimeDao busyTimeDao = null;
 	  private ActivityListAdapter adapter = null;
 	  private View mainView = null;
-	  
-	  private ArrayList<UserActivity> adminActivities = null;
-	  private boolean[] adminActivities_Checked;
-	  private int adminActivities_Size;
 	  
 	  public static interface CreateNewActivityListener {
 		  public void createNewActivity();
@@ -62,16 +61,23 @@ implements OnCheckedChangeListener, OnClickListener,
 	  Drawable back_checked;
 	  Drawable back_unchecked;
 	  
-	  private GregorianCalendar mStartTime = new GregorianCalendar();
-	  private GregorianCalendar mFinishedTime = new GregorianCalendar();
+	  private GregorianCalendar mStartTimeDaily = new GregorianCalendar();
+	  private GregorianCalendar mFinishedTimeDaily = new GregorianCalendar();
+	  private GregorianCalendar mStartTimeWeekly = null; //only initialized if "Set Weekly" is set
+	  private int mWeekCount;
 	  
-	  private boolean SUNDAY = false;
-	  private boolean MONDAY = false;
-	  private boolean TUESDAY = false;
-	  private boolean WEDNESDAY = false;
-	  private boolean THURSDAY = false;
-	  private boolean FRIDAY = false;
-	  private boolean SATURDAY = false;
+	  private ArrayList<UserActivity> adminActivities = null;
+	  private boolean[] adminActivities_Checked;
+	  private int adminActivities_Size;
+	  
+	  private boolean[] WEEKDAYS_SELECTED = new boolean[7];
+	  private boolean SELECT_DAILY = false;
+	  private boolean SELECT_WEEKLY = false;
+	  
+	  private final long DAY_IN_MILLIS = DateUtils.DAY_IN_MILLIS;
+	  private final long WEEK_IN_MILLIS = DateUtils.WEEK_IN_MILLIS;
+	  private final long MINUTE_IN_MILLIS = DateUtils.MINUTE_IN_MILLIS;
+	  private final long HOUR_IN_MILLIS = DateUtils.HOUR_IN_MILLIS;
       
   	@Override
   	public void onAttach(Activity parentActivity) {
@@ -131,30 +137,26 @@ implements OnCheckedChangeListener, OnClickListener,
 	    			
 	    			back_checked = getResources().getDrawable(R.drawable.back_checked);
 	    			back_unchecked = getResources().getDrawable(R.drawable.back_unchecked);
-            
-        			NumberPicker numberPicker = (NumberPicker) mainView.findViewById(R.id.number_picker);
-           		numberPicker.setMinValue(0);
-           		numberPicker.setMaxValue(16);
            		
-           		mStartTime.setTime(new Date());
-           		mFinishedTime.setTime(new Date());
+           		mStartTimeDaily.setTime(new Date());
+           		mFinishedTimeDaily.setTime(new Date());
 
            		startPicker = (TimePicker) mainView.findViewById(R.id.start_time);
            		stopPicker = (TimePicker) mainView.findViewById(R.id.stop_time);
            		startPicker.setOnTimeChangedListener(this);
            		stopPicker.setOnTimeChangedListener(this);
            		
-           		int hour = mStartTime.get(Calendar.HOUR_OF_DAY);
-           		int minute = mStartTime.get(Calendar.MINUTE);
+           		int hour = mStartTimeDaily.get(Calendar.HOUR_OF_DAY);
+           		int minute = mStartTimeDaily.get(Calendar.MINUTE);
            		
-           		mStartTime.clear(Calendar.MILLISECOND);
-           		mStartTime.clear(Calendar.SECOND);
-           		mStartTime.clear(Calendar.MINUTE);
-           		mStartTime.set(Calendar.HOUR_OF_DAY, 0);
-           		mFinishedTime.clear(Calendar.MILLISECOND);
-           		mFinishedTime.clear(Calendar.SECOND);
-           		mFinishedTime.clear(Calendar.MINUTE);
-           		mFinishedTime.set(Calendar.HOUR_OF_DAY, 0);
+           		mStartTimeDaily.clear(Calendar.MILLISECOND);
+           		mStartTimeDaily.clear(Calendar.SECOND);
+           		mStartTimeDaily.clear(Calendar.MINUTE);
+           		mStartTimeDaily.set(Calendar.HOUR_OF_DAY, 0);
+           		mFinishedTimeDaily.clear(Calendar.MILLISECOND);
+           		mFinishedTimeDaily.clear(Calendar.SECOND);
+           		mFinishedTimeDaily.clear(Calendar.MINUTE);
+           		mFinishedTimeDaily.set(Calendar.HOUR_OF_DAY, 0);
            		
            		startPicker.setCurrentHour(hour);
            		startPicker.setCurrentMinute(minute);
@@ -162,18 +164,10 @@ implements OnCheckedChangeListener, OnClickListener,
            		stopPicker.setCurrentMinute(minute);
            		           		    
            		DatePicker datePicker = (DatePicker) mainView.findViewById(R.id.date_picker);
-           		datePicker.init(mStartTime.get(Calendar.YEAR), 
-           		                mStartTime.get(Calendar.MONTH), 
-           		                mStartTime.get(Calendar.DAY_OF_MONTH), 
-           		                new DatePicker.OnDateChangedListener() {
-						
-           							@Override
-           								public void onDateChanged(DatePicker view ,int year, 
-           											              int monthOfYear, int dayOfMonth) {
-           									mStartTime.set(year, monthOfYear, dayOfMonth);
-           									mFinishedTime.set(year, monthOfYear, dayOfMonth);
-           								}       			
-           		});
+           		datePicker.init(mStartTimeDaily.get(Calendar.YEAR), 
+           		                mStartTimeDaily.get(Calendar.MONTH), 
+           		                mStartTimeDaily.get(Calendar.DAY_OF_MONTH), 
+           		                this);
            		
 	    		    saveButton = (Button) view.findViewById(R.id.save_button);
 	    		    saveButton.setOnClickListener(new Button.OnClickListener() {
@@ -193,84 +187,138 @@ implements OnCheckedChangeListener, OnClickListener,
 						}
             		});
             }
-			
+            
 			return view;
 		}
 		
-		@SuppressWarnings("deprecation")
-		public void onClick(View v) {
-			boolean checked = true;
-			
-			switch (v.getId()) {	
-	    		case R.id.sunday :
-	    			SUNDAY = !SUNDAY;
-	    			checked = SUNDAY ? true : false;
-	    			break;
-	    		case R.id.monday :
-	    			MONDAY = !MONDAY;
-	    			checked = MONDAY ? true : false;
-	    			break;
-	    		case R.id.tuesday :
-	    			TUESDAY = !TUESDAY;
-	    			checked = TUESDAY ? true : false;
-	    			break;	
-	    		case R.id.wednesday :
-	    			WEDNESDAY = !WEDNESDAY;
-	    			checked = WEDNESDAY ? true : false;
-	    			break;	
-	    		case R.id.thursday :
-	    			THURSDAY = !THURSDAY;
-	    			checked = THURSDAY ? true : false;
-	    			break;	
-	    		case R.id.friday :
-	    			FRIDAY = !FRIDAY;
-	    			checked = FRIDAY ? true : false;
-	    			break;	
-	    		case R.id.saturday :
-	    			SATURDAY = !SATURDAY;
-	    			checked = SATURDAY ? true : false;
-	    			break;	
-			}
-
-		    if(checked) {
-		        v.setBackgroundDrawable(back_checked);
-		    } else {
-		    		v.setBackgroundDrawable(back_unchecked);
-		    }
+		private void saveUpdate() {
+		    	if(SELECT_DAILY) {
+		    		insertDaily();
+		    	} else if(SELECT_WEEKLY) {
+		    		insertWeekly();
+		    	} else {
+		    		Toast.makeText(parentActivity, "Select either 'Single Date' or 'Repeat Weekly'", Toast.LENGTH_LONG).show();
+		    	}			
 		}
 		
-		private void saveUpdate() {
+		private void insertWeekly() {
+			if(busyTimeDao == null) {
+				busyTimeDao = new BusyTimeDao(DatabaseCreator.instance(parentActivity).getWritableDatabase());				
+			}
+
+		    if(adminActivities_Size < 1) {
+		    		Toast.makeText(parentActivity, "No activities selected.", Toast.LENGTH_LONG).show();
+		    	} else {
+		    		long startDate = mStartTimeWeekly.getTimeInMillis();
+		    		
+		    		DateDebugger.print(startDate);
+		    		
+				long stopDate = startDate + (WEEK_IN_MILLIS * mWeekCount);
+				
+									//TODO: REFACTOR OUT 'SELECTED TIME' BASED ON NEW XML LAYOUT (THE NEW DIALOGFRAGMENT)
+				long startTime = ((mStartTimeDaily.get(Calendar.HOUR_OF_DAY) * HOUR_IN_MILLIS) + 
+										 (mStartTimeDaily.get(Calendar.MINUTE) * MINUTE_IN_MILLIS));
+				long stopTime = ((mFinishedTimeDaily.get(Calendar.HOUR_OF_DAY) * HOUR_IN_MILLIS) + 
+						 		(mFinishedTimeDaily.get(Calendar.MINUTE) * MINUTE_IN_MILLIS));
+				long curDate;
+				long curStartTime;
+				long curStopTime;
+				
+				boolean successful = true;  //tracks whether every update has succesfully inserted a busytime
+				UserActivity activity;
+				BusyTime bt = null;
+				
+				int curWeekday = mStartTimeWeekly.get(Calendar.DAY_OF_WEEK);
+
+				//for each weekday,
+				for(int i = 0; i < 7; i++) {
+					curDate = startDate + (i * DAY_IN_MILLIS);					
+					
+					//if this weekday is selected,
+					if(WEEKDAYS_SELECTED[curWeekday]) {
+						
+						//then for every week until the stop date,
+						while(curDate < stopDate) {
+						    
+							//for each activity,
+						    	curStartTime = startTime + curDate;
+						    	curStopTime = stopTime + curDate;
+							for (int j = 0; j < adminActivities_Size; j++) {
+
+								//if the activity is selected, set the BusyTime
+								if(adminActivities_Checked[j]) {
+						    			activity = adminActivities.get(j);
+						    			
+					    				DateDebugger.print("UpdateFragment.saveUpdate()", curStartTime);
+					    				DateDebugger.print("UpdateFragment.saveUpdate()", curStopTime);						    			
+						    			
+						    			bt = busyTimeDao.insertChecked(curStartTime, curStopTime, activity.getName(), activity.getLocation(), AdminData.ID);		    			
+						    	
+						    			//and then check result for obvious failures
+						    			if(bt == null) {
+						    				successful = false;
+						    			} else { //success
+						    				DateDebugger.print("UpdateFragment.saveUpdate()", bt.getStart_time());
+						    				DateDebugger.print("UpdateFragment.saveUpdate()", bt.getStop_time());
+						    			}
+						    		}
+							}
+							curDate = curDate + WEEK_IN_MILLIS;
+						}						
+					}
+					curWeekday = (curWeekday + 1) % 7;
+				}
+				
+			    if(successful) {
+			    		Toast.makeText(parentActivity, "Update Saved!", Toast.LENGTH_LONG).show();
+			    } else {
+			    		Toast.makeText(parentActivity, "Error occured.  Update NOT saved!", Toast.LENGTH_LONG).show();
+			    }
+		    	}
+		}
+		
+		private void insertDaily() {
 			BusyTime bt = null;
 			if(busyTimeDao == null) {
 				busyTimeDao = new BusyTimeDao(DatabaseCreator.instance(parentActivity).getWritableDatabase());				
 			}
 
-		    long start = mStartTime.getTimeInMillis();
-		    long stop = mFinishedTime.getTimeInMillis();   
-//		    DateDebugger.print("saveUpdate()", start);
-//		    DateDebugger.print("saveUpdate()", stop);
+		    long start = mStartTimeDaily.getTimeInMillis();
+		    long stop = mFinishedTimeDaily.getTimeInMillis();   
+		    DateDebugger.print("saveUpdate()", start);
+		    DateDebugger.print("saveUpdate()", stop);
 		    
 		    UserActivity activity;
 		    boolean successful = true;
-		    for (int i = 0; i < adminActivities_Size; i++) {
-		    	if(adminActivities_Checked[i]) {
-			    	activity = adminActivities.get(i);
-			    	bt = busyTimeDao.insertChecked(start, stop, activity.getName(), activity.getLocation(), AdminData.ID);		    			
-			    	if(bt == null) {
-			    		successful = false;
-			    	} else { //success
-//			    		DateDebugger.print("UpdateFragment.saveUpdate()", bt.getStart_time());
-//			    		DateDebugger.print("UpdateFragment.saveUpdate()", bt.getStop_time());
-			    	}
-		    	}
-		    }
-		    if(successful) {
-		    		Toast.makeText(parentActivity, "Update Saved!", Toast.LENGTH_LONG).show();
+		    if(adminActivities_Size < 1) {
+		    		Toast.makeText(parentActivity, "No activities selected.", Toast.LENGTH_LONG).show();
 		    } else {
-		    		Toast.makeText(parentActivity, "Error occured.  Update NOT saved!", Toast.LENGTH_LONG).show();
-		    }	
+			    for (int i = 0; i < adminActivities_Size; i++) {
+				    	if(adminActivities_Checked[i]) {
+					    	activity = adminActivities.get(i);
+					    	bt = busyTimeDao.insertChecked(start, stop, activity.getName(), activity.getLocation(), AdminData.ID);		    			
+					    	
+					    	if(bt == null) {
+					    		successful = false;
+					    	} else { //success
+//					    		DateDebugger.print("UpdateFragment.saveUpdate()", bt.getStart_time());
+//					    		DateDebugger.print("UpdateFragment.saveUpdate()", bt.getStop_time());
+					    	}
+				    	}
+			    }
+			    if(successful) {
+			    		Toast.makeText(parentActivity, "Update Saved!", Toast.LENGTH_LONG).show();
+			    } else {
+			    		Toast.makeText(parentActivity, "Error occured.  Update NOT saved!", Toast.LENGTH_LONG).show();
+			    }			    	
+		    }
+		    
 		}
-
+		
+		////////////////////////////////////////////////////////////////////////////////////////////
+		//                                       LISTENERS                                        //                         
+		////////////////////////////////////////////////////////////////////////////////////////////
+		
 		//For the RadioButtons only
 		@Override
 		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -290,9 +338,28 @@ implements OnCheckedChangeListener, OnClickListener,
 	           			repeatLayout.setVisibility(View.GONE);
 	           			pickerLayout.setVisibility(View.GONE);           			
 	           			datePicker.setVisibility(View.VISIBLE);
-	           			
+	           			SELECT_DAILY = true;
+	           			SELECT_WEEKLY = false;	           			
 	           		} else if(id == R.id.select_weekdays) {
 	           			rbSingleDate.setChecked(false);
+	           			SELECT_DAILY = false;
+	           			SELECT_WEEKLY = true;
+	           			if(mStartTimeWeekly == null) {
+	           				//initialize start time weekly
+	           				mStartTimeWeekly = new GregorianCalendar();
+	           				mStartTimeWeekly.setTime(new Date());
+	                   		mStartTimeWeekly.set(Calendar.MILLISECOND, 0);
+	                   		mStartTimeWeekly.set(Calendar.SECOND, 0);
+	                   		mStartTimeWeekly.set(Calendar.MINUTE, 0);
+	                   		mStartTimeWeekly.set(Calendar.HOUR_OF_DAY, 0);
+	                   		
+	                   		//initialize week count picker
+	                   		mWeekCount = 0;
+	                   		NumberPicker numberPicker = (NumberPicker) mainView.findViewById(R.id.week_count_picker);
+	                   		numberPicker.setMinValue(0);
+	                   		numberPicker.setMaxValue(16);
+	                   		numberPicker.setOnValueChangedListener(this);
+	           			}
 	           			repeatLayout.setVisibility(View.VISIBLE);
 	           			pickerLayout.setVisibility(View.VISIBLE);
 	           			datePicker.setVisibility(View.GONE);
@@ -302,20 +369,78 @@ implements OnCheckedChangeListener, OnClickListener,
            		buttonView.setChecked(true);
             }
 		}
+
+		@SuppressWarnings("deprecation")
+		public void onClick(View v) {
+			boolean checked = true;
+			
+			switch (v.getId()) {	
+	    		case R.id.sunday :
+	    			WEEKDAYS_SELECTED[0] = !WEEKDAYS_SELECTED[0];
+	    			checked = WEEKDAYS_SELECTED[0] ? true : false;
+	    			break;
+	    		case R.id.monday :
+	    			WEEKDAYS_SELECTED[1] = !WEEKDAYS_SELECTED[1];
+	    			checked = WEEKDAYS_SELECTED[1] ? true : false;
+	    			break;
+	    		case R.id.tuesday :
+	    			WEEKDAYS_SELECTED[2] = !WEEKDAYS_SELECTED[2];
+	    			checked = WEEKDAYS_SELECTED[2] ? true : false;
+	    			break;	
+	    		case R.id.wednesday :
+	    			WEEKDAYS_SELECTED[3] = !WEEKDAYS_SELECTED[3];
+	    			checked = WEEKDAYS_SELECTED[3] ? true : false;
+	    			break;	
+	    		case R.id.thursday :
+	    			WEEKDAYS_SELECTED[4] = !WEEKDAYS_SELECTED[4];
+	    			checked = WEEKDAYS_SELECTED[4] ? true : false;
+	    			break;	
+	    		case R.id.friday :
+	    			WEEKDAYS_SELECTED[5] = !WEEKDAYS_SELECTED[5];
+	    			checked = WEEKDAYS_SELECTED[5] ? true : false;
+	    			break;	
+	    		case R.id.saturday :
+	    			WEEKDAYS_SELECTED[6] = !WEEKDAYS_SELECTED[6];
+	    			checked = WEEKDAYS_SELECTED[6] ? true : false;
+	    			break;	
+			}
+
+		    if(checked) {
+		        v.setBackgroundDrawable(back_checked);
+		    } else {
+		    		v.setBackgroundDrawable(back_unchecked);
+		    }
+		}
+
+		@Override
+		public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+			mWeekCount = newVal;
+		}
 		
 		@Override
 		public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
 			if(view.getId() == R.id.start_time) {				
-			    	mStartTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
-			    	mStartTime.set(Calendar.MINUTE, minute);
+			    	mStartTimeDaily.set(Calendar.HOUR_OF_DAY, hourOfDay);
+			    	mStartTimeDaily.set(Calendar.MINUTE, minute);
 			} else if(view.getId() == R.id.stop_time) {
-			    	mFinishedTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
-			    	mFinishedTime.set(Calendar.MINUTE, minute);
+			    	mFinishedTimeDaily.set(Calendar.HOUR_OF_DAY, hourOfDay);
+			    	mFinishedTimeDaily.set(Calendar.MINUTE, minute);
 			}
 			
 			//TODO: make sure stop time doesn't surpass start time
 			//     if it does, move stop time to start time
-		} 
+		}
+		
+		@Override
+		public void onDateChanged(DatePicker view, int year, int monthOfYear,
+				int dayOfMonth) {
+			mStartTimeDaily.set(year, monthOfYear, dayOfMonth);
+			mFinishedTimeDaily.set(year, monthOfYear, dayOfMonth);
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////
+		//                                 	LIST VIEW ADAPTER                                    //                         
+		////////////////////////////////////////////////////////////////////////////////////////////		
 		
 		public class ActivityListAdapter extends ArrayAdapter<UserActivity> {
 			  private final Context context;
