@@ -18,6 +18,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -151,12 +152,12 @@ implements OnCheckedChangeListener, OnClickListener,
            		
            		mStartTimeDaily.clear(Calendar.MILLISECOND);
            		mStartTimeDaily.clear(Calendar.SECOND);
-           		mStartTimeDaily.clear(Calendar.MINUTE);
-           		mStartTimeDaily.set(Calendar.HOUR_OF_DAY, 0);
+//           		mStartTimeDaily.clear(Calendar.MINUTE);
+//           		mStartTimeDaily.set(Calendar.HOUR_OF_DAY, 0);
            		mFinishedTimeDaily.clear(Calendar.MILLISECOND);
            		mFinishedTimeDaily.clear(Calendar.SECOND);
-           		mFinishedTimeDaily.clear(Calendar.MINUTE);
-           		mFinishedTimeDaily.set(Calendar.HOUR_OF_DAY, 0);
+//           		mFinishedTimeDaily.clear(Calendar.MINUTE);
+//           		mFinishedTimeDaily.set(Calendar.HOUR_OF_DAY, 0);
            		
            		startPicker.setCurrentHour(hour);
            		startPicker.setCurrentMinute(minute);
@@ -228,14 +229,21 @@ implements OnCheckedChangeListener, OnClickListener,
 				UserActivity activity;
 				BusyTime bt = null;
 				
-				int curWeekday = mStartTimeWeekly.get(Calendar.DAY_OF_WEEK);
+				int curWeekday = mStartTimeWeekly.get(Calendar.DAY_OF_WEEK) - 1; //convert to zero-indexing
+				
+				Log.i("cc", curWeekday + "");
 
 				//for each weekday,
 				for(int i = 0; i < 7; i++) {
 					curDate = startDate + (i * DAY_IN_MILLIS);					
 					
+					
+					
 					//if this weekday is selected,
 					if(WEEKDAYS_SELECTED[curWeekday]) {
+					
+						DateDebugger.print(curDate);
+						Log.i("cc", "selected: " + curWeekday + "");
 						
 						//then for every week until the stop date,
 						while(curDate < stopDate) {
